@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "733480073041",
+    "project_id": "electrify-5ae88",
+    "storage_bucket": "electrify-5ae88.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:733480073041:android:caaf7d3703e24faff38570",
+        "android_client_info": {
+          "package_name": "com.example.electrifyy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "733480073041-c2b6e2tencr9fej6ccskroiniu66c6ok.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1MXM07a09pOEmRJi4N7GQg07_8rCEhSc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "733480073041-c2b6e2tencr9fej6ccskroiniu66c6ok.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
