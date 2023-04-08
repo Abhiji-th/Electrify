@@ -47,7 +47,7 @@ class _loginState extends State<login> {
                     child: TextField(
                       controller: _emailController,
                       decoration: InputDecoration(
-                        hintText: 'E mail',
+                        labelText: 'E mail',
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5)
                         ),
