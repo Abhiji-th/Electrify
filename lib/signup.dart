@@ -2,7 +2,6 @@ import 'package:electrifyy/database.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'main.dart';
 class signup extends StatefulWidget {
@@ -21,6 +20,7 @@ class _signupState extends State<signup> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  // final user = FirebaseAuth.instance.currentUser;
 
   @override
   void dispose() {
@@ -252,36 +252,22 @@ class _signupState extends State<signup> {
     );
 
     try{
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      UserCredential result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
+      User? user = result.user;
 
-      addUserDetails(
+      await DatabaseService(uid: user!.uid).updateUserData(
           nameController.text.trim(),
           idController.text.trim(),
-          pnumController.text.trim(),
-          emailController.text.trim(),
+          pnumController.text.trim()
       );
-      // User? user = result.user;
-      // String CId = CIdController as String;
-      // int pnum = pnumController as int;
-      // await DatabaseService(uid: user!.uid).updateUserData('123456',12345678);
+
     } on FirebaseAuthException catch (e) {
       print(e);
     }
     navigatorKey.currentState!.popUntil((route) => route.isFirst);
   }
-
-  Future addUserDetails(
-      String name, String CId, String pnum, String email) async {
-    await FirebaseFirestore.instance.collection('userdetails').add({
-      'name': name,
-      'CId':CId,
-      'pnum':pnum,
-      'email':email,
-    });
-  }
-
 }
 

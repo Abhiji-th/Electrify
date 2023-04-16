@@ -1,7 +1,7 @@
+import 'package:electrifyy/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
-
 import 'header_drawer.dart';
 
 class HomePage extends StatefulWidget {
@@ -10,11 +10,42 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // String selectedPage = 'Kerala';
-    var currentPage=DrawerSections.profile;
+  bool isMounted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isMounted = true;
+  }
+
+  @override
+  void dispose() {
+    isMounted = false;
+    super.dispose();
+  }
+
+  var currentPage=DrawerSections.profile;
+  final user = FirebaseAuth.instance.currentUser!;
+  String name='';
+  String id ='';
+  String pnum ='';
+
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser!;
+    DatabaseService databaseService = DatabaseService(uid: user.uid);
+    Future getData() async {
+      dynamic names = await databaseService.getCurrentUserData();
+      if(names!=null){
+        if(isMounted){
+          setState(() {
+            name = names[0];
+            id = names[1];
+            pnum = names[2];
+          });
+        }
+      }
+    }
+    getData();
     return Scaffold(
       backgroundColor: Colors.tealAccent,
       appBar: AppBar(
@@ -34,15 +65,21 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                CircleAvatar(
-                  child: Image.asset('assets/man.gif'),
-                ),
+                // Container(
+                //   margin: EdgeInsets.all(10.0),
+                //   child: CircleAvatar(
+                //     child: Image.asset('assets/man.gif'),
+                //   ),
+                // ),
                 Column(
                   children: [
                     Column(
                       children: [
-                        Text(user.email!),
-                        Text('Phone Number  **********')
+                        Text("Welcome $name!"),
+                        SizedBox(height:10),
+                        Text("Consumer ID : $id"),
+                        SizedBox(height:10),
+                        Text("Phone Number : $pnum")
                       ],
                     )
                   ],
@@ -98,6 +135,26 @@ class _HomePageState extends State<HomePage> {
                 ],
               )
           ),
+          // Padding(
+          //   padding: const EdgeInsets.all(35.0),
+          //   child: SizedBox(
+          //     height: 52,
+          //     width: 200,
+          //     child: ElevatedButton(
+          //       onPressed: () {},
+          //       child: Text('Refresh',
+          //         style: TextStyle(
+          //           color: Colors.white,
+          //           fontWeight: FontWeight.bold,
+          //           fontSize: 20,
+          //         ),),
+          //
+          //       style: ElevatedButton.styleFrom(
+          //         backgroundColor: Colors.blue,
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
       drawer: Drawer(
