@@ -6,7 +6,7 @@ import 'header_drawer.dart';
 
 class HomePage extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  _HomePageState createState() => _HomePageState(id: '', pnum: '');
 }
 
 class _HomePageState extends State<HomePage> {
@@ -29,6 +29,11 @@ class _HomePageState extends State<HomePage> {
   String name='';
   String id ='';
   String pnum ='';
+
+  _HomePageState({required this.id, required this.pnum});
+
+  String get getId => id;
+  String get getPnum => pnum;
 
   @override
   Widget build(BuildContext context) {
@@ -135,26 +140,6 @@ class _HomePageState extends State<HomePage> {
                 ],
               )
           ),
-          // Padding(
-          //   padding: const EdgeInsets.all(35.0),
-          //   child: SizedBox(
-          //     height: 52,
-          //     width: 200,
-          //     child: ElevatedButton(
-          //       onPressed: () {},
-          //       child: Text('Refresh',
-          //         style: TextStyle(
-          //           color: Colors.white,
-          //           fontWeight: FontWeight.bold,
-          //           fontSize: 20,
-          //         ),),
-          //
-          //       style: ElevatedButton.styleFrom(
-          //         backgroundColor: Colors.blue,
-          //       ),
-          //     ),
-          //   ),
-          // ),
         ],
       ),
       drawer: Drawer(
@@ -176,6 +161,28 @@ class _HomePageState extends State<HomePage> {
       padding: EdgeInsets.only(top: 15),
       child: Column(
         children: [
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Signed in as:",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            alignment: Alignment.centerLeft,
+            child: Text(
+              user!.email!, // Replace with actual user name
+              style: TextStyle(
+                fontSize: 16,
+              ),
+            ),
+          ),
+          Divider(),
           menuItem(1,"Profile",Icons.person,currentPage==DrawerSections.profile ? true:false
           ),
           menuItem(2,"Settings",Icons.settings,currentPage==DrawerSections.settings ? true:false

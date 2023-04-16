@@ -2,6 +2,7 @@ import 'package:electrifyy/database.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'main.dart';
 class signup extends StatefulWidget {
@@ -264,8 +265,8 @@ class _signupState extends State<signup> {
           pnumController.text.trim()
       );
 
-    } on FirebaseAuthException catch (e) {
-      print(e);
+    } on FirebaseAuthException catch (error) {
+      Fluttertoast.showToast(msg: error.message!);
     }
     navigatorKey.currentState!.popUntil((route) => route.isFirst);
   }
