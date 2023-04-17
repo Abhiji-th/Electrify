@@ -1,20 +1,56 @@
+import 'package:electrifyy/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
-
 import 'header_drawer.dart';
 
 class HomePage extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  _HomePageState createState() => _HomePageState(id: '', pnum: '');
 }
 
 class _HomePageState extends State<HomePage> {
-  // String selectedPage = 'Kerala';
-    var currentPage=DrawerSections.profile;
+  bool isMounted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isMounted = true;
+  }
+
+  @override
+  void dispose() {
+    isMounted = false;
+    super.dispose();
+  }
+
+  var currentPage=DrawerSections.profile;
+  final user = FirebaseAuth.instance.currentUser!;
+  String name='';
+  String id ='';
+  String pnum ='';
+
+  _HomePageState({required this.id, required this.pnum});
+
+  String get getId => id;
+  String get getPnum => pnum;
+
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser!;
+    DatabaseService databaseService = DatabaseService(uid: user.uid);
+    Future getData() async {
+      dynamic names = await databaseService.getCurrentUserData();
+      if(names!=null){
+        if(isMounted){
+          setState(() {
+            name = names[0];
+            id = names[1];
+            pnum = names[2];
+          });
+        }
+      }
+    }
+    getData();
     return Scaffold(
       backgroundColor: Colors.tealAccent,
       appBar: AppBar(
@@ -34,15 +70,21 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                CircleAvatar(
-                  child: Image.asset('assets/man.gif'),
-                ),
+                // Container(
+                //   margin: EdgeInsets.all(10.0),
+                //   child: CircleAvatar(
+                //     child: Image.asset('assets/man.gif'),
+                //   ),
+                // ),
                 Column(
                   children: [
                     Column(
                       children: [
-                        Text(user.email!),
-                        Text('Phone Number  **********')
+                        Text("Welcome $name!"),
+                        SizedBox(height:10),
+                        Text("Consumer ID : $id"),
+                        SizedBox(height:10),
+                        Text("Phone Number : $pnum")
                       ],
                     )
                   ],
@@ -119,6 +161,28 @@ class _HomePageState extends State<HomePage> {
       padding: EdgeInsets.only(top: 15),
       child: Column(
         children: [
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Signed in as:",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            alignment: Alignment.centerLeft,
+            child: Text(
+              user!.email!, // Replace with actual user name
+              style: TextStyle(
+                fontSize: 16,
+              ),
+            ),
+          ),
+          Divider(),
           menuItem(1,"Profile",Icons.person,currentPage==DrawerSections.profile ? true:false
           ),
           menuItem(2,"Settings",Icons.settings,currentPage==DrawerSections.settings ? true:false
