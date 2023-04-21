@@ -16,9 +16,9 @@ class prediction extends StatelessWidget {
           borderRadius: BorderRadius.circular(10.0),
         ),
         child: Text(
-          'My Value',
+          'Expected Bill For This Month:   Value',
           style: TextStyle(
-            fontSize: 24.0,
+            fontSize: 14.0,
             fontWeight: FontWeight.bold,
           ),
         ),

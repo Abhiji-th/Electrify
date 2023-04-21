@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-class Light extends StatelessWidget {
+
+
+class Fan extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('LIGHT',style: TextStyle(color: Colors.black),),
+        title: Text('Light 2',style: TextStyle(color: Colors.black),),
         backgroundColor: Colors.lightBlue[200],
       ),
-      body: Column(
+      body:  Column(
         children: [
           Container(
             margin: EdgeInsets.fromLTRB(25, 70, 25,0),
@@ -46,7 +48,6 @@ class Light extends StatelessWidget {
           )
         ],
       ),
-      );
-
+    );
   }
 }
