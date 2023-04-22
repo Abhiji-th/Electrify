@@ -75,23 +75,23 @@ class _HomePageState extends State<HomePage> {
           Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20), color: Colors.blue[100]),
-            padding: EdgeInsets.fromLTRB(20, 40, 20, 20),
+            padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
             margin: EdgeInsets.only(right: 40, left: 40),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                // Container(
-                //   margin: EdgeInsets.all(10.0),
-                //   child: CircleAvatar(
-                //     child: Image.asset('assets/man.gif'),
-                //   ),
-                // ),
+                Container(
+                  margin: EdgeInsets.fromLTRB(10,20,20,20),
+                  child: CircleAvatar(
+                    child: Image.asset('assets/man.gif'),
+                  ),
+                ),
                 Column(
                   children: [
                     Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text("Welcome $name!",
+                        Text("Welcome  $name !",
                         textAlign: TextAlign.start,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -121,7 +121,7 @@ class _HomePageState extends State<HomePage> {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 color: Colors.blue[100]),
-            padding: EdgeInsets.fromLTRB(20, 40, 20, 20),
+            padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
             margin: EdgeInsets.only(right: 40, left: 40),
             child: Row(
               children: [

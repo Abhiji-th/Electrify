@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'light2.dart';
 import 'tv.dart';
@@ -34,7 +33,7 @@ class device extends StatelessWidget {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => Light()),
+                            MaterialPageRoute(builder: (context) => Light1()),
                           );
                         },
                         child: Image.asset('assets/light2.png',
@@ -62,7 +61,7 @@ class device extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Fan()),
+                        MaterialPageRoute(builder: (context) => Light2()),
                       );
                     },
                     child: Image.asset('assets/light2.png',
