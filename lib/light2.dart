@@ -15,12 +15,14 @@ class _Light2State extends State<Light2> {
   String dispvoltage = 'Loading...';
   String disppower = 'Loading...';
   String dispenergy = 'Loading...';
+  String dispunit = 'Loading...';
   final auth = FirebaseAuth.instance;
   final ref = FirebaseDatabase.instance.ref('devices');
   late StreamSubscription currentStream;
   late StreamSubscription voltageStream;
   late StreamSubscription powerStream;
   late StreamSubscription energyStream;
+  late StreamSubscription unitStream;
 
   @override
   void initState() {
@@ -51,6 +53,12 @@ class _Light2State extends State<Light2> {
       final Object? energy = event.snapshot.value;
       setState(() {
         dispenergy = '$energy';
+      });
+    });
+    unitStream = ref.child('bulb2/unit').onValue.listen((event) {
+      final Object? unit = event.snapshot.value;
+      setState(() {
+        dispunit = '$unit';
       });
     });
   }
@@ -152,7 +160,7 @@ class _Light2State extends State<Light2> {
               borderRadius: BorderRadius.circular(10.0),
             ),
             child: Text(
-              "Units : ",
+              "Units consumed : $dispunit",
               style: TextStyle(
                 fontSize: 14.0,
                 fontWeight: FontWeight.bold,
@@ -189,6 +197,7 @@ class _Light2State extends State<Light2> {
     voltageStream.cancel();
     powerStream.cancel();
     energyStream.cancel();
+    unitStream.cancel();
     super.deactivate();
   }
 }

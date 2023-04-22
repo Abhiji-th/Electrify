@@ -57,12 +57,10 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Center(
-          child: Text(
-            'HOME',
-            style: TextStyle(
-              color: Colors.white,
-            ),
+        title: Text(
+          'HOME',
+          style: TextStyle(
+            color: Colors.white,
           ),
         ),
         backgroundColor: Colors.blueAccent,
