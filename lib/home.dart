@@ -1,23 +1,31 @@
+import 'dart:async';
+
 import 'package:electrifyy/database.dart';
 import 'package:electrifyy/profile.dart';
 import 'package:electrifyy/settings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
 import 'header_drawer.dart';
 
 class HomePage extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState(id: '', pnum: '');
+  _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
   bool isMounted = false;
+  String totalConsumption = "Loading...";
+  final auth = FirebaseAuth.instance;
+  final ref = FirebaseDatabase.instance.ref('devices');
+  late StreamSubscription totalStream;
 
   @override
   void initState() {
     super.initState();
     isMounted = true;
+    activateListeners();
   }
 
   @override
@@ -26,16 +34,21 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  void activateListeners() {
+    totalStream = ref.child('totalEnergy').onValue.listen((event) {
+      final Object? totalEnergy = event.snapshot.value;
+      setState(() {
+        totalConsumption = '$totalEnergy Kwh';
+      });
+    });
+  }
+
   var currentPage = DrawerSections.profile;
   final user = FirebaseAuth.instance.currentUser!;
-  String name = '';
-  String id = '';
-  String pnum = '';
 
-  _HomePageState({required this.id, required this.pnum});
-
-  String get getId => id;
-  String get getPnum => pnum;
+  String name = 'Loading...';
+  String id = 'Loading...';
+  String pnum = 'Loading...';
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +58,7 @@ class _HomePageState extends State<HomePage> {
       if (names != null) {
         if (isMounted) {
           setState(() {
-            name = names[0];
+            name = "Welcome ${names[0]} !";
             id = names[1];
             pnum = names[2];
           });
@@ -70,11 +83,13 @@ class _HomePageState extends State<HomePage> {
           SizedBox(
             height: 30.0,
           ),
+
+          //Profile
           Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20), color: Colors.blue[100]),
             padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
-            margin: EdgeInsets.only(right: 40, left: 40),
+            margin: EdgeInsets.only(right: 20, left: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -89,13 +104,13 @@ class _HomePageState extends State<HomePage> {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text("Welcome  $name !",
+                        Text(name,
                         textAlign: TextAlign.start,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),),
                         SizedBox(height: 10),
-                        Text("Consumer ID : $id",
+                        Text("Cosumer ID : $id",
                           textAlign: TextAlign.start,
                           style:TextStyle(
                           fontWeight: FontWeight.bold,
@@ -115,27 +130,29 @@ class _HomePageState extends State<HomePage> {
           SizedBox(
             height: 20.0,
           ),
+
+          //Total consumption
           Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 color: Colors.blue[100]),
             padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
-            margin: EdgeInsets.only(right: 40, left: 40),
+            margin: EdgeInsets.only(right: 20, left: 20),
             child: Row(
               children: [
-                Text('Live Consumption',
+                Text('Total Energy Consumed : $totalConsumption',
                 style:TextStyle(
                   fontWeight: FontWeight.bold,
                 ) ),
                 SizedBox(
                   width: 20.0,
                 ),
-                SimpleCircularProgressBar(
-                  mergeMode: true,
-                  onGetText: (double value) {
-                    return Text('${value.toInt()}%');
-                  },
-                ),
+                // SimpleCircularProgressBar(
+                //   mergeMode: true,
+                //   onGetText: (double value) {
+                //     return Text('${value.toInt()}%');
+                //   },
+                // ),
               ],
             ),
           ),
@@ -146,7 +163,7 @@ class _HomePageState extends State<HomePage> {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20), color: Colors.blue[100]),
             padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
-            margin: EdgeInsets.only(right: 40, left: 40),
+            margin: EdgeInsets.only(right: 20, left: 20),
             child: Row(
               children: [
                 Text('units amount:',
@@ -164,7 +181,7 @@ class _HomePageState extends State<HomePage> {
                   borderRadius: BorderRadius.circular(20),
                   color: Colors.blue[100]),
               padding: EdgeInsets.fromLTRB(20, 20, 20, 60),
-              margin: EdgeInsets.only(right: 40, left: 40),
+              margin: EdgeInsets.only(right: 20, left: 20),
               child: Row(
                 children: [Center(child: Text('Notifications:',
                 style: TextStyle(
@@ -208,7 +225,7 @@ class _HomePageState extends State<HomePage> {
             padding: EdgeInsets.symmetric(horizontal: 20),
             alignment: Alignment.centerLeft,
             child: Text(
-              user!.email!, // Replace with actual user name
+              user.email!,
               style: TextStyle(
                 fontSize: 16,
               ),
@@ -260,6 +277,12 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  @override
+  void deactivate() {
+    totalStream.cancel();
+    super.deactivate();
   }
 }
 
