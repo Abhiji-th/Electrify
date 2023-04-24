@@ -1,15 +1,15 @@
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
-class Light1 extends StatefulWidget {
+
+
+class Light2 extends StatefulWidget {
   @override
-  State<Light1> createState() => _Light1State();
+  State<Light2> createState() => _Light2State();
 }
 
-class _Light1State extends State<Light1> {
+class _Light2State extends State<Light2> {
 
   String dispcurrent = 'Loading...';
   String dispvoltage = 'Loading...';
@@ -31,31 +31,31 @@ class _Light1State extends State<Light1> {
   }
 
   void activateListeners() {
-    currentStream = ref.child('bulb1/current').onValue.listen((event) {
+    currentStream = ref.child('bulb2/current').onValue.listen((event) {
       final Object? current = event.snapshot.value;
       setState(() {
         dispcurrent = '$current';
       });
     });
-    voltageStream = ref.child('bulb1/voltage').onValue.listen((event) {
+    voltageStream = ref.child('bulb2/voltage').onValue.listen((event) {
       final Object? voltage = event.snapshot.value;
       setState(() {
         dispvoltage = '$voltage';
       });
     });
-    powerStream = ref.child('bulb1/power').onValue.listen((event) {
+    powerStream = ref.child('bulb2/power').onValue.listen((event) {
       final Object? power = event.snapshot.value;
       setState(() {
         disppower = '$power';
       });
     });
-    energyStream = ref.child('bulb1/energy').onValue.listen((event) {
+    energyStream = ref.child('bulb2/energy').onValue.listen((event) {
       final Object? energy = event.snapshot.value;
       setState(() {
         dispenergy = '$energy';
       });
     });
-    unitStream = ref.child('bulb1/unit').onValue.listen((event) {
+    unitStream = ref.child('bulb2/unit').onValue.listen((event) {
       final Object? unit = event.snapshot.value;
       setState(() {
         dispunit = '$unit';
@@ -67,10 +67,10 @@ class _Light1State extends State<Light1> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('BULB 1',style: TextStyle(color: Colors.black),),
+        title: Text('BULB 2',style: TextStyle(color: Colors.black),),
         backgroundColor: Colors.lightBlue[200],
       ),
-      body: Column(
+      body:  Column(
         children: [
 
           //Current
@@ -149,6 +149,7 @@ class _Light1State extends State<Light1> {
             ),
           ),
 
+          //Units
           Container(
             margin: EdgeInsets.fromLTRB(25, 20, 25,0),
             height: 50.0,
@@ -166,6 +167,8 @@ class _Light1State extends State<Light1> {
               ),
             ),
           ),
+
+          //Cost
           Container(
             margin: EdgeInsets.fromLTRB(25, 20, 25, 100),
             height: 50.0,
@@ -185,8 +188,7 @@ class _Light1State extends State<Light1> {
           )
         ],
       ),
-      );
-
+    );
   }
 
   @override

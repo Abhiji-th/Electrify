@@ -1,21 +1,31 @@
+import 'dart:async';
+
 import 'package:electrifyy/database.dart';
+import 'package:electrifyy/profile.dart';
+import 'package:electrifyy/settings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
 import 'header_drawer.dart';
 
 class HomePage extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState(id: '', pnum: '');
+  _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
   bool isMounted = false;
+  String totalConsumption = "Loading...";
+  final auth = FirebaseAuth.instance;
+  final ref = FirebaseDatabase.instance.ref('devices');
+  late StreamSubscription totalStream;
 
   @override
   void initState() {
     super.initState();
     isMounted = true;
+    activateListeners();
   }
 
   @override
@@ -24,67 +34,92 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  var currentPage=DrawerSections.profile;
+  void activateListeners() {
+    totalStream = ref.child('totalEnergy').onValue.listen((event) {
+      final Object? totalEnergy = event.snapshot.value;
+      setState(() {
+        totalConsumption = '$totalEnergy Kwh';
+      });
+    });
+  }
+
+  var currentPage = DrawerSections.profile;
   final user = FirebaseAuth.instance.currentUser!;
-  String name='';
-  String id ='';
-  String pnum ='';
 
-  _HomePageState({required this.id, required this.pnum});
-
-  String get getId => id;
-  String get getPnum => pnum;
+  String name = 'Loading...';
+  String id = 'Loading...';
+  String pnum = 'Loading...';
 
   @override
   Widget build(BuildContext context) {
     DatabaseService databaseService = DatabaseService(uid: user.uid);
     Future getData() async {
       dynamic names = await databaseService.getCurrentUserData();
-      if(names!=null){
-        if(isMounted){
+      if (names != null) {
+        if (isMounted) {
           setState(() {
-            name = names[0];
+            name = "Welcome ${names[0]} !";
             id = names[1];
             pnum = names[2];
           });
         }
       }
     }
+
     getData();
     return Scaffold(
-      backgroundColor: Colors.tealAccent,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Center(
-            child: Text('HOME', style: TextStyle(color: Colors.black),)),
-        backgroundColor: Colors.lightBlue[200],),
+        title: Text(
+          'HOME',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Colors.blueAccent,
+      ),
       body: ListView(
         children: [
-          SizedBox(height: 30.0,),
+          SizedBox(
+            height: 30.0,
+          ),
+
+          //Profile
           Container(
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: Colors.grey
-            ),
-            padding: EdgeInsets.fromLTRB(20, 40, 20, 20),
-            margin: EdgeInsets.only(right: 40, left: 40),
+                borderRadius: BorderRadius.circular(20), color: Colors.blue[100]),
+            padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+            margin: EdgeInsets.only(right: 20, left: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                // Container(
-                //   margin: EdgeInsets.all(10.0),
-                //   child: CircleAvatar(
-                //     child: Image.asset('assets/man.gif'),
-                //   ),
-                // ),
+                Container(
+                  margin: EdgeInsets.fromLTRB(10,20,20,20),
+                  child: CircleAvatar(
+                    child: Image.asset('assets/man.gif'),
+                  ),
+                ),
                 Column(
                   children: [
                     Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text("Welcome $name!"),
-                        SizedBox(height:10),
-                        Text("Consumer ID : $id"),
-                        SizedBox(height:10),
-                        Text("Phone Number : $pnum")
+                        Text(name,
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),),
+                        SizedBox(height: 10),
+                        Text("Cosumer ID : $id",
+                          textAlign: TextAlign.start,
+                          style:TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),),
+                        SizedBox(height: 10),
+                        Text("Phone Number : $pnum",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),)
                       ],
                     )
                   ],
@@ -92,54 +127,67 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          SizedBox(height: 20.0,),
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: Colors.blueGrey
-            ),
-            padding: EdgeInsets.fromLTRB(20, 40, 20, 20),
-            margin: EdgeInsets.only(right: 40, left: 40),
-            child: Row(
-              children: [Text('Live Consumption'),
-                SizedBox(width: 20.0,),
-                SimpleCircularProgressBar(
-                  mergeMode: true,
-                  onGetText: (double value) {
-                    return Text('${value.toInt()}%');
-                  },
-                ),
-              ],
-            ),
+          SizedBox(
+            height: 20.0,
           ),
-          SizedBox(height: 30.0,),
+
+          //Total consumption
           Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                color: Colors.black26
-            ),
+                color: Colors.blue[100]),
             padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
-            margin: EdgeInsets.only(right: 40, left: 40),
+            margin: EdgeInsets.only(right: 20, left: 20),
             child: Row(
               children: [
-                Text('units amount:'),
+                Text('Total Energy Consumed : $totalConsumption',
+                style:TextStyle(
+                  fontWeight: FontWeight.bold,
+                ) ),
+                SizedBox(
+                  width: 20.0,
+                ),
+                // SimpleCircularProgressBar(
+                //   mergeMode: true,
+                //   onGetText: (double value) {
+                //     return Text('${value.toInt()}%');
+                //   },
+                // ),
               ],
             ),
           ),
-          SizedBox(height: 30.0,),
+          SizedBox(
+            height: 30.0,
+          ),
+          Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20), color: Colors.blue[100]),
+            padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+            margin: EdgeInsets.only(right: 20, left: 20),
+            child: Row(
+              children: [
+                Text('units amount:',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 30.0,
+          ),
           Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: Colors.blueGrey
-              ),
+                  color: Colors.blue[100]),
               padding: EdgeInsets.fromLTRB(20, 20, 20, 60),
-              margin: EdgeInsets.only(right: 40, left: 40),
+              margin: EdgeInsets.only(right: 20, left: 20),
               child: Row(
-                children: [
-                  Center(child: Text('Notifications'))
-                ],
-              )
-          ),
+                children: [Center(child: Text('Notifications:',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),))],
+              )),
         ],
       ),
       drawer: Drawer(
@@ -156,7 +204,8 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-    Widget MyDrawerList(){
+
+  Widget MyDrawerList() {
     return Container(
       padding: EdgeInsets.only(top: 15),
       child: Column(
@@ -176,65 +225,69 @@ class _HomePageState extends State<HomePage> {
             padding: EdgeInsets.symmetric(horizontal: 20),
             alignment: Alignment.centerLeft,
             child: Text(
-              user!.email!, // Replace with actual user name
+              user.email!,
               style: TextStyle(
                 fontSize: 16,
               ),
             ),
           ),
           Divider(),
-          menuItem(1,"Profile",Icons.person,currentPage==DrawerSections.profile ? true:false
-          ),
-          menuItem(2,"Settings",Icons.settings,currentPage==DrawerSections.settings ? true:false
-          ),
-          menuItem(3,"Logout",Icons.logout,currentPage==DrawerSections.logout ? true:false
-          ),
+          menuItem(1, "Profile", Icons.person,
+              currentPage == DrawerSections.profile ? true : false),
+          menuItem(2, "Settings", Icons.settings,
+              currentPage == DrawerSections.settings ? true : false),
+          menuItem(3, "Logout", Icons.logout,
+              currentPage == DrawerSections.logout ? true : false),
         ],
       ),
     );
-    }
-    Widget menuItem(int id,String title,IconData icon,bool selected){
+  }
+
+  Widget menuItem(int id, String title, IconData icon, bool selected) {
     return Material(
-      color: selected ?Colors.grey[300]:Colors.transparent,
+      color: selected ? Colors.grey[300] : Colors.transparent,
       child: InkWell(
-        onTap: (){
+        onTap: () {
           Navigator.pop(context);
-              setState(() {
-                if(id==1){
-                  currentPage=DrawerSections.profile;
-                }
-                else if(id==2){
-                  currentPage=DrawerSections.settings;
-                }
-                else if(id==3){
-                  FirebaseAuth.instance.signOut();
-                  currentPage=DrawerSections.logout;
-                }
-              });
+          setState(() {
+            if (id == 1) {
+              currentPage = DrawerSections.profile;
+            } else if (id == 2) {
+              currentPage = DrawerSections.settings;
+            } else if (id == 3) {
+              FirebaseAuth.instance.signOut();
+              currentPage = DrawerSections.logout;
+            }
+          });
         },
-      child: Padding(
-        padding: EdgeInsets.all(15),
-        child: Row(
-          children: [
-            Expanded(
-              child: Icon(icon,
-              size: 20,
-              color: Colors.black
-                ,),
-            ),
-            Expanded(
-                flex: 3,
-                child: Text(title)),
-          ],
+        child: Padding(
+          padding: EdgeInsets.all(15),
+          child: Row(
+            children: [
+              Expanded(
+                child: Icon(
+                  icon,
+                  size: 20,
+                  color: Colors.black,
+                ),
+              ),
+              Expanded(flex: 3, child: Text(title)),
+            ],
+          ),
         ),
       ),
-      ),
     );
-    }
+  }
 
+  @override
+  void deactivate() {
+    totalStream.cancel();
+    super.deactivate();
   }
-  enum DrawerSections{
+}
+
+enum DrawerSections {
   settings,
-    profile,
-    logout,
-  }
+  profile,
+  logout,
+}

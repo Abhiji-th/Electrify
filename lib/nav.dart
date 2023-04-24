@@ -27,7 +27,7 @@ class _navState extends State<nav> {
       backgroundColor: const Color(0xFFe0e0e0),
       bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.shifting,
-          backgroundColor: Colors.white,
+          backgroundColor: Colors. black,
           selectedItemColor: Colors.blue,
           unselectedItemColor: Colors.grey,
           currentIndex: currentIndex,
