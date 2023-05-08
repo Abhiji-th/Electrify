@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'light2.dart';
-import 'tv.dart';
 import 'light.dart';
 
 class device extends StatelessWidget {
@@ -8,22 +7,22 @@ class device extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text('DEVICES',style: TextStyle(color: Colors.black),)),
+        title: const Center(child: Text('DEVICES',style: TextStyle(color: Colors.black),)),
         backgroundColor: Colors.lightBlue[200],      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(
+            const SizedBox(
               height: 30.0,
             ),
             Row(
               children: [
                 Container(
-                  margin: EdgeInsets.all(30.0),
+                  margin: const EdgeInsets.all(30.0),
                   height: 100.0,
                   width: 120.0,
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                   color: Colors.black12,),
@@ -40,18 +39,18 @@ class device extends StatelessWidget {
                         ),
                       ),
 
-                      Text("Light1")
+                      const Text("Bulb1")
                     ],
                   ),
                 ),
 
 
-            SizedBox(height: 20,width: 0.0,),
+            const SizedBox(height: 20,width: 0.0,),
             Container(
-              margin: EdgeInsets.all(30.0),
+              margin: const EdgeInsets.all(30.0),
               height: 100.0,
               width: 120.0,
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 color: Colors.black12,),
@@ -67,11 +66,11 @@ class device extends StatelessWidget {
                     child: Image.asset('assets/light2.png',
                     ),
                   ),
-                  Text("Light2")
+                  const Text("Bulb2")
                 ],
               ),
             ),],),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // Row(
             //   children: [
             //     Container(
