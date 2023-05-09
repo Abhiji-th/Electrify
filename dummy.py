@@ -65,6 +65,7 @@ while True:
     total_energy = round(total_energy, 4)
 
     bill = calculate_bill(total_unit)
+    bill = round(bill, 2)
 
     # Create a dictionary of the data to be uploaded to the database
     data = {
