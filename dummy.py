@@ -1,28 +1,36 @@
 import random
 import time
-import math
 import firebase_admin
+import math
 from firebase_admin import credentials
+from firebase_admin import firestore
 from firebase_admin import db
+import numpy as np
+from sklearn.linear_model import LinearRegression
 
-# Fetch the service account key JSON file and initialize Firebase Admin SDK
+# Initialize the Firestore database using a service account
 cred = credentials.Certificate(r"C:\Users\Abhijith C\Apps\Electrify\electrify-5ae88-firebase-adminsdk-spnrb-56328eb6ad.json")
+# firebase_admin.initialize_app(cred)
 firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://electrify-5ae88-default-rtdb.firebaseio.com/Devices'
+    'databaseURL': 'https://electrify-5ae88-default-rtdb.firebaseio.com/'
 })
 
-# Get a reference to the root of your Firebase Realtime Database
-root_ref = db.reference('/')
+db_store = firestore.client()
 
-bulb1_totalenergy = 0
-bulb2_totalenergy = 0
-total_energy = 0
+# Fetch IRMS and VRMS values from Firestore collection
+collection_ref = db_store.collection('bulb_data')
+docs = collection_ref.get()
+
+def calculate_energy(irms, vrms):
+    power = irms * vrms
+    energy = power / 1000  # Convert from watts to kilowatts (kW)
+    return energy
 
 def calculate_bill(units):
     fixed_charges = [35, 55, 70, 100, 110]
     energy_charges = [3.15, 3.95, 5.00, 6.80, 8.00]
     bill = 0
-    
+
     # Calculate bill based on consumption slab
     if units <= 50:
         bill = fixed_charges[0] + units * energy_charges[0]
@@ -34,8 +42,78 @@ def calculate_bill(units):
         bill = fixed_charges[3] + (units - 150) * energy_charges[3]
     else:
         bill = fixed_charges[4] + (units - 200) * energy_charges[4]
-    
+
     return bill
+
+# Initialize lists to store minute-level energy consumption for each bulb
+bulb1_energy_minutes = []
+bulb2_energy_minutes = []
+
+for doc in docs:
+    data = doc.to_dict()
+    bulb1_irms = data.get('bulb1_irms')
+    bulb1_vrms = data.get('bulb1_vrms')
+    bulb2_irms = data.get('bulb2_irms')
+    bulb2_vrms = data.get('bulb2_vrms')
+
+    # Calculate energy consumption for each bulb
+    bulb1_energy = calculate_energy(bulb1_irms, bulb1_vrms)
+    bulb2_energy = calculate_energy(bulb2_irms, bulb2_vrms)
+
+    # Append the minute-level energy consumption to the respective lists
+    bulb1_energy_minutes.append(bulb1_energy)
+    bulb2_energy_minutes.append(bulb2_energy)
+
+# Convert the minute-level energy consumption to numpy arrays
+bulb1_energy_minutes = np.array(bulb1_energy_minutes).reshape(-1, 1)
+bulb2_energy_minutes = np.array(bulb2_energy_minutes).reshape(-1, 1)
+
+# Create minute intervals for the entire month
+num_minutes_in_month = 30 * 24 * 60  # Assuming a 30-day month
+X_month = np.arange(num_minutes_in_month).reshape(-1, 1)
+
+# Train separate linear regression models for each bulb
+model_bulb1 = LinearRegression()
+model_bulb1.fit(np.arange(len(bulb1_energy_minutes)).reshape(-1, 1), bulb1_energy_minutes)
+
+model_bulb2 = LinearRegression()
+model_bulb2.fit(np.arange(len(bulb2_energy_minutes)).reshape(-1, 1), bulb2_energy_minutes)
+
+# Predict energy consumption for the entire month for each bulb
+predicted_energy_bulb1 = model_bulb1.predict(X_month)
+predicted_energy_bulb2 = model_bulb2.predict(X_month)
+
+# Calculate total predicted energy consumption for the month for each bulb
+total_energy_bulb1 = np.sum(predicted_energy_bulb1)
+total_energy_bulb2 = np.sum(predicted_energy_bulb2)
+total_energy = total_energy_bulb1 + total_energy_bulb2
+
+bill = calculate_bill(math.floor(total_energy))
+
+# Print the total predicted energy consumption for the month for each bulb
+print(f"Total Predicted Energy Consumption for Bulb 1: {total_energy_bulb1}")
+print(f"Total Predicted Energy Consumption for Bulb 2: {total_energy_bulb2}")
+
+# Prepare the data to be uploaded to Firebase
+data = {
+    'total_energy_bulb1': round(total_energy_bulb1, 4),
+    'total_energy_bulb2': round(total_energy_bulb2, 4),
+    'total_energy': round(total_energy, 2),
+    'bill': bill
+}
+
+# Upload the data to Firebase Realtime Database
+ref = db.reference('/predicted_energy')
+ref.set(data)
+
+# Print a success message
+print("Total predicted energy consumption uploaded to Firebase.")
+
+ref = db.reference('/')
+
+bulb1_totalenergy = 0
+bulb2_totalenergy = 0
+total_energy = 0
 
 # Loop indefinitely to continuously upload random values to the database
 while True:
@@ -91,10 +169,8 @@ while True:
     }
 
     # Upload the data to the database
-    root_ref.update(data)
+    ref.update(data)
 
     # Wait for 5 seconds before generating and uploading the next set of values
     # time.sleep(1)
-
-
 
