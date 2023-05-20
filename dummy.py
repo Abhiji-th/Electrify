@@ -9,7 +9,7 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 
 # Initialize the Firestore database using a service account
-cred = credentials.Certificate(r"C:\Users\Abhijith C\Apps\Electrify\electrify-5ae88-firebase-adminsdk-spnrb-56328eb6ad.json")
+cred = credentials.Certificate("C:\Users\aiswa\majpro\Electrify\electrify-5ae88-firebase-adminsdk-spnrb-14100cd315.json")
 # firebase_admin.initialize_app(cred)
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://electrify-5ae88-default-rtdb.firebaseio.com/'

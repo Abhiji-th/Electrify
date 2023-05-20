@@ -1,36 +1,42 @@
-import random
 import firebase_admin
 from firebase_admin import credentials
-from firebase_admin import firestore
+from firebase_admin import db
+import random
+import datetime
 
-# Initialize Firebase credentials and Firestore client
-cred = credentials.Certificate(r"C:\Users\Abhijith C\Apps\Electrify\electrify-5ae88-firebase-adminsdk-spnrb-56328eb6ad.json")
-firebase_admin.initialize_app(cred)
-db = firestore.client()
+# Initialize Firebase credentials and database
+cred = credentials.Certificate(r"C:\Users\aiswa\majpro\Electrify\electrify-5ae88-firebase-adminsdk-spnrb-14100cd315.json")
+firebase_admin.initialize_app(cred, {
+    'databaseURL': 'https://electrify-5ae88-default-rtdb.firebaseio.com/'
+})
 
-# Define function to generate random values and upload to Firestore
-def upload_random_values():
-    # Generate random VRMS and IRMS values for two bulbs
-    bulb1_vrms = round(random.uniform(220, 240), 2)
-    bulb1_irms = round(random.uniform(0.01, 0.02), 4)
-    bulb2_vrms = round(random.uniform(220, 240), 2)
-    bulb2_irms = round(random.uniform(0.01, 0.02), 4)
+# Generate and upload dataset
+def generate_and_upload_dataset(num_entries):
+    # Get a reference to the database
+    ref = db.reference('light_bulbs')
 
-    # Create dictionary of data to upload to Firestore
-    data = {
-        'bulb1_vrms': bulb1_vrms,
-        'bulb1_irms': bulb1_irms,
-        'bulb2_vrms': bulb2_vrms,
-        'bulb2_irms': bulb2_irms
-    }
+    for i in range(num_entries):
+        # Generate random on/off status and energy consumption for light bulbs
+        bulb1_status = random.choice([True, False])
+        bulb2_status = random.choice([True, False])
+        energy_consumption = random.uniform(0.1, 0.5)  # Random energy consumption between 0.1 and 0.5 kWh
 
-    # Upload data to Firestore
-    doc_ref = db.collection('bulb_data').document()
-    doc_ref.set(data)
+        # Create a timestamp for the entry
+        timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-# Upload random values to Firestore every minute, stopping after 1440 entries
-counter = 0
-while counter < 1440:
-    upload_random_values()
-    counter += 1
-    #time.sleep(60)  # Wait for a minute before uploading again
+        # Create a dictionary object for the data entry
+        data = {
+            'bulb1_status': bulb1_status,
+            'bulb2_status': bulb2_status,
+            'energy_consumption': energy_consumption,
+            'timestamp': timestamp
+        }
+
+        # Push the data entry to the Firebase database
+        ref.push(data)
+
+    print(f'{num_entries} dataset entries uploaded to Firebase.')
+
+
+# Usage
+generate_and_upload_dataset(100)  # Upload 100 dataset entries
