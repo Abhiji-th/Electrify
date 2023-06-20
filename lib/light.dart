@@ -84,7 +84,7 @@ class _Light1State extends State<Light1> {
               borderRadius: BorderRadius.circular(10.0),
             ),
             child: Text(
-              "Current : $dispcurrent",
+              "Current: ${double.tryParse(dispcurrent)?.toStringAsFixed(4) ?? 'Invalid'}",
               style: TextStyle(
                 fontSize: 14.0,
                 fontWeight: FontWeight.bold,
@@ -103,7 +103,7 @@ class _Light1State extends State<Light1> {
               borderRadius: BorderRadius.circular(10.0),
             ),
             child: Text(
-              "Voltage : $dispvoltage",
+              "Voltage: ${double.tryParse(dispvoltage)?.toStringAsFixed(4) ?? 'Invalid'}",
               style: TextStyle(
                 fontSize: 14.0,
                 fontWeight: FontWeight.bold,
@@ -122,7 +122,7 @@ class _Light1State extends State<Light1> {
               borderRadius: BorderRadius.circular(10.0),
             ),
             child: Text(
-              "Power : $disppower",
+              "Power: ${double.tryParse(disppower)?.toStringAsFixed(4) ?? 'Invalid'}",
               style: TextStyle(
                 fontSize: 14.0,
                 fontWeight: FontWeight.bold,
@@ -141,7 +141,7 @@ class _Light1State extends State<Light1> {
               borderRadius: BorderRadius.circular(10.0),
             ),
             child: Text(
-              "Energy : $dispenergy",
+              "Energy: ${double.tryParse(dispenergy)?.toStringAsFixed(4) ?? 'Invalid'}",
               style: TextStyle(
                 fontSize: 14.0,
                 fontWeight: FontWeight.bold,

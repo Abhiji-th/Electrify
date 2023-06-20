@@ -232,11 +232,8 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           Divider(),
-          menuItem(1, "Profile", Icons.person,
-              currentPage == DrawerSections.profile ? true : false),
-          menuItem(2, "Settings", Icons.settings,
-              currentPage == DrawerSections.settings ? true : false),
-          menuItem(3, "Logout", Icons.logout,
+
+          menuItem(1, "Logout", Icons.logout,
               currentPage == DrawerSections.logout ? true : false),
         ],
       ),
