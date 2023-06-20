@@ -1,42 +1,49 @@
+import random
 import firebase_admin
 from firebase_admin import credentials
-from firebase_admin import db
-import random
-import datetime
+from firebase_admin import firestore
+from datetime import datetime, timedelta
 
-# Initialize Firebase credentials and database
-cred = credentials.Certificate(r"C:\Users\aiswa\majpro\Electrify\electrify-5ae88-firebase-adminsdk-spnrb-14100cd315.json")
-firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://electrify-5ae88-default-rtdb.firebaseio.com/'
-})
+# Initialize Firebase credentials and Firestore client
+cred = credentials.Certificate(r"C:\Users\Abhijith C\Apps\Electrify\electrify-5ae88-firebase-adminsdk-spnrb-56328eb6ad.json")
+firebase_admin.initialize_app(cred)
+db = firestore.client()
 
-# Generate and upload dataset
-def generate_and_upload_dataset(num_entries):
-    # Get a reference to the database
-    ref = db.reference('light_bulbs')
+# Delete existing bulb data collection
+def delete_bulb_data_collection():
+    bulb_data_ref = db.collection('bulb_data')
+    docs = bulb_data_ref.stream()
+    for doc in docs:
+        doc.reference.delete()
 
-    for i in range(num_entries):
-        # Generate random on/off status and energy consumption for light bulbs
-        bulb1_status = random.choice([True, False])
-        bulb2_status = random.choice([True, False])
-        energy_consumption = random.uniform(0.1, 0.5)  # Random energy consumption between 0.1 and 0.5 kWh
+# Define function to generate random values and upload to Firestore
+def upload_random_values(date, time, day_of_week):
+    # Generate random energy consumed values for two bulbs
+    bulb1_energy = round(random.uniform(0.1, 10), 2)
+    bulb2_energy = round(random.uniform(0.1, 10), 2)
 
-        # Create a timestamp for the entry
-        timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    # Create dictionary of data to upload to Firestore
+    data = {
+        'bulb1_energy': bulb1_energy,
+        'bulb2_energy': bulb2_energy,
+        'timestamp': f"{date} {time}",
+        'day_of_week': day_of_week
+    }
 
-        # Create a dictionary object for the data entry
-        data = {
-            'bulb1_status': bulb1_status,
-            'bulb2_status': bulb2_status,
-            'energy_consumption': energy_consumption,
-            'timestamp': timestamp
-        }
+    # Upload data to Firestore
+    doc_ref = db.collection('bulb_data').document(f"{date} {time}")
+    doc_ref.set(data)
 
-        # Push the data entry to the Firebase database
-        ref.push(data)
+# Delete existing bulb data collection
+delete_bulb_data_collection()
 
-    print(f'{num_entries} dataset entries uploaded to Firebase.')
+# Generate data for 30 days
+start_date = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+for day in range(30):
+    current_date = start_date + timedelta(days=day)
+    for hour in range(24):
+        current_time = current_date.replace(hour=hour)
+        day_of_week = current_time.strftime("%A")
+        upload_random_values(current_date.strftime("%Y-%m-%d"), current_time.strftime("%H:%M:%S"), day_of_week)
 
-
-# Usage
-generate_and_upload_dataset(100)  # Upload 100 dataset entries
+print("Data generation and upload complete.")
