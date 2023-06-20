@@ -2,35 +2,48 @@ import random
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
+from datetime import datetime, timedelta
 
 # Initialize Firebase credentials and Firestore client
 cred = credentials.Certificate(r"C:\Users\Abhijith C\Apps\Electrify\electrify-5ae88-firebase-adminsdk-spnrb-56328eb6ad.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
+# Delete existing bulb data collection
+def delete_bulb_data_collection():
+    bulb_data_ref = db.collection('bulb_data')
+    docs = bulb_data_ref.stream()
+    for doc in docs:
+        doc.reference.delete()
+
 # Define function to generate random values and upload to Firestore
-def upload_random_values():
-    # Generate random VRMS and IRMS values for two bulbs
-    bulb1_vrms = round(random.uniform(220, 240), 2)
-    bulb1_irms = round(random.uniform(0.01, 0.02), 4)
-    bulb2_vrms = round(random.uniform(220, 240), 2)
-    bulb2_irms = round(random.uniform(0.01, 0.02), 4)
+def upload_random_values(date, time, day_of_week):
+    # Generate random energy consumed values for two bulbs
+    bulb1_energy = round(random.uniform(0.1, 10), 2)
+    bulb2_energy = round(random.uniform(0.1, 10), 2)
 
     # Create dictionary of data to upload to Firestore
     data = {
-        'bulb1_vrms': bulb1_vrms,
-        'bulb1_irms': bulb1_irms,
-        'bulb2_vrms': bulb2_vrms,
-        'bulb2_irms': bulb2_irms
+        'bulb1_energy': bulb1_energy,
+        'bulb2_energy': bulb2_energy,
+        'timestamp': f"{date} {time}",
+        'day_of_week': day_of_week
     }
 
     # Upload data to Firestore
-    doc_ref = db.collection('bulb_data').document()
+    doc_ref = db.collection('bulb_data').document(f"{date} {time}")
     doc_ref.set(data)
 
-# Upload random values to Firestore every minute, stopping after 1440 entries
-counter = 0
-while counter < 1440:
-    upload_random_values()
-    counter += 1
-    #time.sleep(60)  # Wait for a minute before uploading again
+# Delete existing bulb data collection
+delete_bulb_data_collection()
+
+# Generate data for 30 days
+start_date = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+for day in range(30):
+    current_date = start_date + timedelta(days=day)
+    for hour in range(24):
+        current_time = current_date.replace(hour=hour)
+        day_of_week = current_time.strftime("%A")
+        upload_random_values(current_date.strftime("%Y-%m-%d"), current_time.strftime("%H:%M:%S"), day_of_week)
+
+print("Data generation and upload complete.")
