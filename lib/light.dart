@@ -166,23 +166,23 @@ class _Light1State extends State<Light1> {
               ),
             ),
           ),
-          Container(
-            margin: EdgeInsets.fromLTRB(25, 20, 25, 100),
-            height: 50.0,
-            width: 300.0,
-            padding: EdgeInsets.all(10.0),
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: Text(
-              'Cost:',
-              style: TextStyle(
-                fontSize: 14.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          )
+          // Container(
+          //   margin: EdgeInsets.fromLTRB(25, 20, 25, 100),
+          //   height: 50.0,
+          //   width: 300.0,
+          //   padding: EdgeInsets.all(10.0),
+          //   decoration: BoxDecoration(
+          //     color: Colors.grey[300],
+          //     borderRadius: BorderRadius.circular(10.0),
+          //   ),
+          //   child: Text(
+          //     'Cost:',
+          //     style: TextStyle(
+          //       fontSize: 14.0,
+          //       fontWeight: FontWeight.bold,
+          //     ),
+          //   ),
+          // )
         ],
       ),
       );
