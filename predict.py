@@ -60,7 +60,7 @@ model.add(Dense(units=1))
 model.compile(optimizer='adam', loss='mean_squared_error')
 
 # Train the LSTM model
-model.fit(X, y, epochs=100, batch_size=32)
+model.fit(X, y, epochs=10, batch_size=32)
 
 # Prepare the input for predicting the next month
 last_month_data = total_energy_scaled[-window_size:]
@@ -73,4 +73,28 @@ predicted = scaler.inverse_transform(predicted_scaled)
 
 # Total energy consumption for the next month
 total_energy_predicted = np.sum(predicted)
-print("Predicted total energy consumption for the next month:", total_energy_predicted)
+
+# Function to calculate KSEB electricity bill
+def calculate_bill(units):
+    fixed_charges = [35, 55, 70, 100, 110]
+    energy_charges = [3.15, 3.95, 5.00, 6.80, 8.00]
+    bill = 0
+    
+    # Calculate bill based on consumption slab
+    if units <= 50:
+        bill = fixed_charges[0] + units * energy_charges[0]
+    elif units <= 100:
+        bill = fixed_charges[1] + (units - 50) * energy_charges[1]
+    elif units <= 150:
+        bill = fixed_charges[2] + (units - 100) * energy_charges[2]
+    elif units <= 200:
+        bill = fixed_charges[3] + (units - 150) * energy_charges[3]
+    else:
+        bill = fixed_charges[4] + (units - 200) * energy_charges[4]
+    
+    return bill
+
+units = math.floor(total_energy_predicted)
+bill = calculate_bill(units)
+
+print("Predicted bill for the next month:", bill)

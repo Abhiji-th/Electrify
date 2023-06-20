@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:electrifyy/function.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,10 @@ class prediction extends StatefulWidget {
 }
 
 class _predictionState extends State<prediction> {
+
+  String url='http://192.168.1.6:5000/api';
+  var data;
+  String output = 'Loading...';
   String disppredicted = 'Loading...';
   final auth = FirebaseAuth.instance;
   final ref = FirebaseDatabase.instance.ref('predicted_energy');
@@ -47,7 +53,7 @@ class _predictionState extends State<prediction> {
               borderRadius: BorderRadius.circular(10.0),
             ),
             child: Text(
-              'Expected Bill For This Month: $disppredicted',
+              'Predicted Bill for this month : $output Rs',
               style: const TextStyle(
                 fontSize: 14.0,
                 fontWeight: FontWeight.bold,
@@ -57,9 +63,13 @@ class _predictionState extends State<prediction> {
     SizedBox(height: 60.0,),
     Center(
     child: TextButton(
-    onPressed: () {
-    // Code to execute when the text button is pressed
-    print('Text button pressed!');
+    onPressed: () async{
+        data = await fetchdata(url);
+        var decoded = jsonDecode(data);
+        setState(() {
+          output = decoded['output'];
+        });
+
     },
     style: TextButton.styleFrom(
     primary: Colors.white,
