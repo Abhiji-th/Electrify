@@ -45,7 +45,7 @@ class _billState extends State<bill> {
             borderRadius: BorderRadius.circular(10.0),
           ),
           child: Text(
-            'Electricity Bill For This Month: $bill',
+            'Electricity bill till date : $bill',
             style: TextStyle(
               fontSize: 14.0,
               fontWeight: FontWeight.bold,

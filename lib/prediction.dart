@@ -4,6 +4,7 @@ import 'package:electrifyy/function.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class prediction extends StatefulWidget {
   @override
@@ -64,11 +65,16 @@ class _predictionState extends State<prediction> {
     Center(
     child: TextButton(
     onPressed: () async{
-        data = await fetchdata(url);
-        var decoded = jsonDecode(data);
-        setState(() {
-          output = decoded['output'];
-        });
+
+        try {
+          data = await fetchdata(url);
+          var decoded = jsonDecode(data);
+          setState(() {
+            output = decoded['output'];
+          });
+        } catch (error) {
+          Fluttertoast.showToast(msg: error.toString());
+        }
 
     },
     style: TextButton.styleFrom(

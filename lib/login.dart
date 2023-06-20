@@ -87,19 +87,19 @@ class _loginState extends State<login> {
                       ),
                     ),
                     SizedBox(height: 60),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: SizedBox(
-                        height: 50,
-                        width: 200,
-                        child: TextButton(
-                          child: Text("Forgot Password"),
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/forgotpassword');
-                          },
-                        ),
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.all(16.0),
+                    //   child: SizedBox(
+                    //     height: 50,
+                    //     width: 200,
+                    //     child: TextButton(
+                    //       child: Text("Forgot Password"),
+                    //       onPressed: () {
+                    //         Navigator.pushNamed(context, '/forgotpassword');
+                    //       },
+                    //     ),
+                    //   ),
+                    // ),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: SizedBox(

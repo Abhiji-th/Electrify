@@ -248,10 +248,6 @@ class _HomePageState extends State<HomePage> {
           Navigator.pop(context);
           setState(() {
             if (id == 1) {
-              currentPage = DrawerSections.profile;
-            } else if (id == 2) {
-              currentPage = DrawerSections.settings;
-            } else if (id == 3) {
               FirebaseAuth.instance.signOut();
               currentPage = DrawerSections.logout;
             }
